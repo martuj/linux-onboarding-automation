@@ -1,0 +1,43 @@
+---
+- hosts: localhost
+  become: yes
+
+  tasks:
+
+  - name: Install Tools
+    apt:
+      name:
+        - git
+        - curl
+        - vim
+        - unzip
+      state: present
+
+  - name: Create Team Users
+    user:
+      name: "{{ item }}"
+      shell: /bin/bash
+      state: present
+    loop: "{{ users }}"
+
+  - name: Create Project Directory
+    file:
+      path: "/opt/{{ project_name }}"
+      state: directory
+      mode: '0775'
+
+  - name: Disable Root Login
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: '^PermitRootLogin'
+      line: 'PermitRootLogin no'
+
+  - name: Restart SSH
+    service:
+      name: ssh
+      state: restarted
+
+  - name: Deploy Banner
+    template:
+      src: ../templates/motd.j2
+      dest: /etc/motd
