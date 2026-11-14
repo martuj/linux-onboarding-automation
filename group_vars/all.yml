@@ -2,5 +2,6 @@ users:
   - devops1
   - devops2
   - devops3
+  - devops4
 
 project_name: cloudmigration
